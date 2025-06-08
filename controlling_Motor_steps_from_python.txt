@@ -1,0 +1,24 @@
+from svgpathtools import svg2paths
+import serial
+import math
+import time
+
+MOTOR_DISTANCE = 779.0  # mm
+STEP_SIZE = 0.005   
+ser = serial.Serial('COM4', 115200)
+ser.write(f"0,0\n".encode())
+
+def coords_to_steps(x, y):
+    left_length = math.hypot(x, y)
+    right_length = math.hypot(MOTOR_DISTANCE - x, y)
+    left_steps = int(left_length / STEP_SIZE)
+    right_steps = int(right_length / STEP_SIZE)
+    return left_steps, right_steps
+
+
+def move_to(x, y):
+    left, right = coords_to_steps(x, y)
+    ser.write(f"{left - initial_left_steps},{initial_right_steps - right}\n".encode())
+
+
+initial_left_steps, initial_right_steps = coords_to_steps(200, 200)
